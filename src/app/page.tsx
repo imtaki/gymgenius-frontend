@@ -5,8 +5,6 @@ import {
   Dumbbell, 
   Target, 
   TrendingUp, 
-  Calendar, 
-  Users, 
   Zap,
   BarChart3,
   Apple,
@@ -49,28 +47,6 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Dumbbell className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold">GymGenius</span>
-              <Badge variant="secondary" className="hidden sm:inline-flex">AI Powered</Badge>
-            </div>
-            <nav className="hidden md:flex items-center space-x-6">
-              <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
-              <a href="#benefits" className="text-muted-foreground hover:text-foreground transition-colors">Benefits</a>
-              <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
-            </nav>
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm">Sign In</Button>
-              <Button size="sm">Get Started</Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Hero Section */}
       <section className="relative py-20 lg:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-[var(--hero-gradient)]"></div>
