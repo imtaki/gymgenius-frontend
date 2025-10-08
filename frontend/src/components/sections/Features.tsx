@@ -1,5 +1,5 @@
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "../ui/badge"
+import { Card, CardContent } from "../ui/card"
 import { Dumbbell, Target, BarChart3, Apple, Settings } from "lucide-react"
 export default function Features() {
     const features = [

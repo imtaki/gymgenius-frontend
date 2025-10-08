@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Dumbbell, Eye, EyeOff, Mail, Lock, User, InspectionPanel } from "lucide-react";
 import Link from "next/link";
 import { z } from "zod";
-import { Input } from "@/components/ui/input";
+import { Input } from "../../../components/ui/input";
 
 const signUpSchema = z.object({
   userName: z

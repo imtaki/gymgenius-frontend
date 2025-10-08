@@ -4,7 +4,7 @@ import {
   Calendar, 
   Users, 
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "../ui/button";
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();

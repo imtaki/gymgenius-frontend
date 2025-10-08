@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "../ui/badge"
 import { TrendingUp, CircleQuestionMark, Zap, Target, BarChart3, Calendar, Apple } from "lucide-react"
 
 export default function Benefits() {
