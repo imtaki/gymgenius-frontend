@@ -75,25 +75,23 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-2 mb-6">
-            <Dumbbell className="h-10 w-10 text-blue-500" />
-            <span className="text-3xl font-bold text-white">
-              <Link href="/" className="hover:text-blue-400 transition-colors">
-                GymGenius
+            <Dumbbell className="h-10 w-10" />
+            <span className="text-3xl font-bold ">
+              <Link href="/" className=" transition-colors">
               </Link>
             </span>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-          <p className="text-slate-400">Sign in to continue your fitness journey</p>
+          <p className="0">Log in to GymGenius</p>
         </div>
 
-        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700 p-8 shadow-2xl">
+        <div className=" backdrop-blur-sm rounded-2xl border border-slate-700 p-8 shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
+              <label htmlFor="email" className="block text-sm text-center font-medium text-slate-300 mb-2">
                 Email Address
               </label>
               <div className="relative">
@@ -117,18 +115,18 @@ export default function LoginPage() {
 
             
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
+              <label htmlFor="password" className="block text-sm text-center font-medium  mb-2">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 " />
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-12 py-3 bg-slate-700/50 border rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                  className={`w-full pl-10 pr-12 py-3 bg-slate-700/50 border rounded-lg  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                     errors.password ? 'border-red-500' : 'border-slate-600'
                   }`}
                   placeholder="Enter your password"
@@ -153,7 +151,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center"
+              className="w-full bg-zinc-800 disabled:bg-blue-800 disabled:cursor-not-allowed  font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center"
             >
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -164,11 +162,11 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-slate-400">
-              Don`&apos;`t have an account?{" "}
+            <p className="">
+              Don&apos;t have an account?{" "}
               <Link
                 href="/signup"
-                className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+                className=" hover:text-blue-300 font-medium transition-colors"
               >
                 Sign up for free
               </Link>
