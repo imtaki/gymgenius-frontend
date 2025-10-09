@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Dumbbell, Eye, EyeOff, Mail, Lock, User, InspectionPanel } from "lucide-react";
+import { Dumbbell, Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 import Link from "next/link";
 import { z } from "zod";
 import { Input } from "../../../components/ui/input";
+import axios from "axios";
+import api from "../../utils/axios";
 
 const signUpSchema = z.object({
   userName: z
@@ -19,10 +21,10 @@ const signUpSchema = z.object({
   password: z
     .string()
     .min(1, "Password is required")
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[0-9]/, "Password must contain at least one number"),
+    .min(8, "Password must be at least 8 characters"),
+    // .regex(/[A-Z]/, "Password must contain at least one uppercase letter") obsolete for now
+    // .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    // .regex(/[0-9]/, "Password must contain at least one number"),
   confirmPassword: z
     .string()
     .min(1, "Please confirm your password"),
@@ -73,30 +75,21 @@ export default function SignUpPage() {
       const validatedData = signUpSchema.parse(formData);
       
       setErrors({});
-      
-
-      // API CALL
-      
-      // Redirect AND show success message after timeout
-      
+    
+      await api.post("http://localhost:3001/api/auth/register", {
+        username: validatedData.userName,
+        email: validatedData.email,
+        password: validatedData.password,
+     
+      });
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1500);
     
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        // Handle Zod validation errors
-        const fieldErrors: Partial<Record<keyof SignUpFormData, string>> = {};
-        error.errors.forEach((err) => {
-          if (err.path[0]) {
-            fieldErrors[err.path[0] as keyof SignUpFormData] = err.message;
-          }
-        });
-        setErrors(fieldErrors);
-      } else {
-        // Handle other errors (API errors, etc.)
-        console.error("Sign up error:", error);
-      }
-    } finally {
-      setIsLoading(false);
-    }
+     console.error(error);
+     setErrors({ password: "Registration failed. Please try again." });
+
   };
 
   return (
@@ -290,4 +283,5 @@ export default function SignUpPage() {
       </div>
     </div>
   );
+ }
 }
