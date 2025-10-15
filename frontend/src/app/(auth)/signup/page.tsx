@@ -31,6 +31,52 @@ const signUpSchema = z
 
 type SignUpFormData = z.infer<typeof signUpSchema>;
 
+function VerificationCodeInputs({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  disabled?: boolean;
+}) {
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>, idx: number) => {
+    const val = e.target.value.replace(/[^0-9]/g, "");
+    const newValue = value.split("");
+    newValue[idx] = val;
+    // If user types, move to next input
+    if (val && idx < 4) {
+      const next = document.getElementById(`code-input-${idx + 1}`);
+      next?.focus();
+    }
+    onChange(newValue.join(""));
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const paste = e.clipboardData.getData("text").replace(/[^0-9]/g, "").slice(0, 5);
+    onChange(paste.padEnd(5, ""));
+  };
+
+  return (
+    <div className="flex justify-center space-x-2 mb-4">
+      {[0, 1, 2, 3, 4].map((idx) => (
+        <Input
+          key={idx}
+          id={`code-input-${idx}`}
+          type="text"
+          inputMode="numeric"
+          maxLength={1}
+          value={value[idx] || ""}
+          onChange={(e) => handleInput(e, idx)}
+          onPaste={handlePaste}
+          disabled={disabled}
+          className="text-center text-xl tracking-widest w-12 h-12 bg-slate-700 border border-slate-600 text-white rounded-lg"
+        />
+      ))}
+    </div>
+  );
+}
+
 export default function SignUpPage() {
   const router = useRouter();
   const [formData, setFormData] = useState<SignUpFormData>({
@@ -146,7 +192,7 @@ export default function SignUpPage() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-2 mb-6">
             <Dumbbell className="h-10 w-10" />
-            <span className="text-3xl font-bold text-white">FitTracker</span>
+            <span className="text-3xl font-bold ">FitTracker</span>
           </div>
           <p className="text-slate-300">
             Create your account and start your fitness journey
@@ -161,7 +207,6 @@ export default function SignUpPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Username */}
             <div>
               <label
                 htmlFor="userName"
@@ -381,19 +426,11 @@ export default function SignUpPage() {
               <span className="text-blue-400">{formData.email}</span>.
             </p>
 
-            <div className="flex justify-center space-x-2 mb-4">
-              <Input
-                type="text"
-                inputMode="numeric"
-                maxLength={5}
-                value={verificationCode}
-                onChange={(e) =>
-                  setVerificationCode(e.target.value.replace(/[^0-9]/g, ""))
-                }
-                placeholder="Enter code"
-                className="text-center text-xl tracking-widest w-40 bg-slate-700 border border-slate-600 text-white"
-              />
-            </div>
+            <VerificationCodeInputs
+              value={verificationCode}
+              onChange={setVerificationCode}
+              disabled={isVerifying}
+            />
 
             {verificationError && (
               <p className="text-red-400 text-sm mb-3">{verificationError}</p>
@@ -411,16 +448,7 @@ export default function SignUpPage() {
             >
               {isVerifying ? "Verifying..." : "Verify"}
             </button>
-
-            <button
-              onClick={() => {
-                setVerificationError("");
-                setVerificationCode("");
-              }}
-              className="mt-3 text-sm text-blue-400 hover:text-blue-300"
-            >
-              Resend Code
-            </button>
+            { /*email resend link can be added here */}
           </div>
         </div>
       )}
