@@ -28,20 +28,8 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
         if (existingUser) {
             res.status(409).json({ message: 'Username or email already exists' });
         }
+;
 
-        // const emailVerificationToken = await prisma.verificationToken.findFirst({
-        //     where: { token: verificationCode, user: {email} }
-        // });
-        
-        // if (!emailVerificationToken || emailVerificationToken.expiresAt < new Date()) {
-        //     res.status(400).json({ message: 'Invalid or expired verification code' });
-        //     return;
-        // } else {
-        //     await prisma.verificationToken.delete({
-        //         where: { token: verificationCode}
-        //     });
-        // }
-        
         const hashedPassword = await bcrypt.hash(password, 10);
         const verificationToken = Math.floor(10000 + Math.random() * 90000).toString();
         const newUser = await prisma.user.create({
@@ -88,7 +76,7 @@ export const loginUser= async (req: Request, res: Response): Promise<any> => {
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            res.status(401).json({ message: "Invalid email or password" });
+            return res.status(401).json({ message: "Invalid email or password" });
         }
 
         const accessToken = jwt.sign({ id: user?.id, username: user.userName, role: user.role }, JWT_SECRET, { expiresIn: "1h" });
@@ -107,6 +95,7 @@ export const loginUser= async (req: Request, res: Response): Promise<any> => {
     } catch (error: any) {
         console.error("Error during login:", error);
         res.status(500).json({ message: "Internal server error" });
+        return;
     }
 };
 
