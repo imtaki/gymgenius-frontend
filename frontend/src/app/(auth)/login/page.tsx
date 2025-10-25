@@ -3,85 +3,38 @@
 import { useState } from "react";
 import { Dumbbell, Eye, EyeOff, Mail, Lock } from "lucide-react";
 import Link from "next/link";
-import { z } from "zod";
 import api from "../../utils/axios";
 import { useRouter } from "next/navigation";
-const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, "Email is required")
-    .email("Please enter a valid email address"),
-  password: z
-    .string()
-    .min(1, "Password is required")
-    .min(8, "Password must be at least 8 characters long"),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState<LoginFormData>({
-    email: "",
-    password: "",
-  });
-  const [errors, setErrors] = useState<Partial<Record<keyof LoginFormData, string>>>({});
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
-    
-    if (errors[name as keyof LoginFormData]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: undefined,
-      }));
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setError("");
     
+    if (!email || !password) {
+      setError("Email and password are required");
+      return;
+    }
+    
+    setIsLoading(true);
+
     try {
-      const validatedData = loginSchema.parse(formData);
+      const { data } = await api.post("/api/login", { email, password }, { withCredentials: true });
       
-      setErrors({});
-      
-      const response = await api.post("/api/auth/login", {
-        email: validatedData.email,
-        password: validatedData.password,
-      });
-
-      const { accessToken, user } = response.data;
-      const { role } = user;
-
-      if (response.status === 201 || response.status === 200) {
-        document.cookie = `role=${role}; path=/;`;
-        document.cookie = `token=${accessToken}; path=/;`;
-      }
-      api.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
-      router.push("/dashboard");
-      
-      
-      
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const fieldErrors: Partial<Record<keyof LoginFormData, string>> = {};
-        error.errors.forEach((err) => {
-          if (err.path[0]) {
-            fieldErrors[err.path[0] as keyof LoginFormData] = err.message;
-          }
-        });
-        setErrors(fieldErrors);
+      if (data?.user) {
+        router.push("/dashboard");
       } else {
-        console.error("Login error:", error);
+        setError("Login failed - no token received");
       }
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Login failed");
     } finally {
       setIsLoading(false);
     }
@@ -93,16 +46,21 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-2 mb-6">
             <Dumbbell className="h-10 w-10" />
-            <span className="text-3xl font-bold ">
-              <Link href="/" className=" transition-colors">
-              </Link>
-            </span>
+            <Link href="/" className="text-3xl font-bold">
+              GymGenius
+            </Link>
           </div>
-          <p className="0">Log in to GymGenius</p>
+          <p>Log in to GymGenius</p>
         </div>
 
-        <div className=" backdrop-blur-sm rounded-2xl border border-slate-700 p-8 shadow-2xl">
+        <div className="backdrop-blur-sm rounded-2xl border border-slate-700 p-8 shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="p-3 bg-red-500/10 border border-red-500 rounded-lg text-red-400 text-sm">
+                {error}
+              </div>
+            )}
+
             <div>
               <label htmlFor="email" className="block text-sm text-center font-medium text-slate-300 mb-2">
                 Email Address
@@ -112,62 +70,45 @@ export default function LoginPage() {
                 <input
                   type="email"
                   id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className={`w-full pl-10 pr-4 py-3 bg-slate-700/50 border rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                    errors.email ? 'border-red-500' : 'border-slate-600'
-                  }`}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter your email"
                 />
               </div>
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-400">{errors.email}</p>
-              )}
             </div>
 
-            
             <div>
-              <label htmlFor="password" className="block text-sm text-center font-medium  mb-2">
+              <label htmlFor="password" className="block text-sm text-center font-medium mb-2">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 " />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5" />
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className={`w-full pl-10 pr-12 py-3 bg-slate-700/50 border rounded-lg  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                    errors.password ? 'border-red-500' : 'border-slate-600'
-                  }`}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-10 pr-12 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-300 transition-colors"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-300"
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-400">{errors.password}</p>
-              )}
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-zinc-800 disabled:bg-blue-800 disabled:cursor-not-allowed  font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center"
+              className="w-full bg-zinc-800 disabled:bg-blue-800 disabled:cursor-not-allowed font-semibold py-3 px-4 rounded-lg transition-all"
             >
               {isLoading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto" />
               ) : (
                 "Sign In"
               )}
@@ -175,12 +116,9 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="">
+            <p>
               Don&apos;t have an account?{" "}
-              <Link
-                href="/signup"
-                className=" hover:text-blue-300 font-medium transition-colors"
-              >
+              <Link href="/signup" className="hover:text-blue-300 font-medium">
                 Sign up for free
               </Link>
             </p>

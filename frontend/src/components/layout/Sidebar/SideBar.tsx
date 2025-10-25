@@ -3,7 +3,7 @@ import SidebarClient from "./SideBarClient";
 
 export default async function Sidebar() {
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const token = cookieStore.get("jwt_token")?.value;
   const role = cookieStore.get("role")?.value;
 
   const isLoggedIn = !!token;

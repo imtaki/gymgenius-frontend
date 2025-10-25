@@ -58,14 +58,12 @@ export default function SidebarClient({ isLoggedIn, role }: SidebarClientProps) 
   ];
 
    async function handleLogout() {
-    const token = getCookie("token");
+    const token = getCookie("jwt_token");
     if (!token) return;
 
     try {
-      const res = await api.post("/api/auth/logout", { token });
+      const res = await api.post("/api/logout", { token });
       if (res.status === 200) {
-        document.cookie = "token=; path=/; max-age=0;";
-        document.cookie = "role=; path=/; max-age=0;";
         setIsLoggingOut(true);
         window.location.href = "/login";
       }
@@ -119,7 +117,7 @@ export default function SidebarClient({ isLoggedIn, role }: SidebarClientProps) 
               />
             ))}
 
-            {role === "ADMIN" && (
+            {role === "admin" && (
               <SidebarLink href="/admin" label="Admin Panel" icon={CodeXml} />
             )}
 
