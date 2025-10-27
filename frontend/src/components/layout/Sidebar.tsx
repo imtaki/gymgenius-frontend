@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import {
   LucideIcon,
@@ -13,13 +13,8 @@ import {
   Dumbbell,
   CodeXml,
 } from "lucide-react";
-import api from "../../../app/utils/axios";
-import getCookie from "../../../lib/getCookie";
-
-interface SidebarClientProps {
-  isLoggedIn: boolean;
-  role: string | null;
-}
+import api from "../../app/utils/axios";
+import getCookie from "../../lib/getCookie";
 
 interface SidebarLinkProps {
   href: string;
@@ -47,9 +42,11 @@ const SidebarLink = ({ href, label, icon: Icon }: SidebarLinkProps) => {
   );
 };
 
-export default function SidebarClient({ isLoggedIn, role }: SidebarClientProps) {
+export default function SidebarClient() {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const navItems = [
     { label: "Dashboard", href: "/dashboard", icon: House },
@@ -57,12 +54,17 @@ export default function SidebarClient({ isLoggedIn, role }: SidebarClientProps) 
     { label: "Settings", href: "/settings", icon: Settings },
   ];
 
-   async function handleLogout() {
+  useEffect(() => {
     const token = getCookie("jwt_token");
-    if (!token) return;
+    const userRole = getCookie("role");
+    
+    setIsLoggedIn(!!token);
+    setRole(userRole || null);
+  }, []);
 
+  async function handleLogout() {
     try {
-      const res = await api.post("/api/logout", { token });
+      const res = await api.post("/api/logout");
       if (res.status === 200) {
         setIsLoggingOut(true);
         window.location.href = "/login";
