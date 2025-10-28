@@ -56,4 +56,8 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function meals() {
+        return $this->belongsToMany(Meal::class, 'meal_user');
+    }
 }

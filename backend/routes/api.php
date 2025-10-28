@@ -18,6 +18,7 @@ Route::post('/register', [AuthController::class, 'register']);
 // Email
 Route::post('/verify-email', [AuthController::class, 'verifyEmail']);
 
-//Exercise 
-Route::get('/exercise', [ExerciseController::class, 'getExercises']);
+//Exercise
+Route::get('/exercises', [ExerciseController::class, 'getExercises']);
 Route::post('/exercise', [ExerciseController::class, 'createExercises']);
+Route::get('/exercises/muscle-groups', [ExerciseController::class, 'getMuscleGroups']);

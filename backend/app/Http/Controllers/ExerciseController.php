@@ -31,9 +31,18 @@ class ExerciseController extends Controller
         ], 201);
     }
 
-    public function getExercises(Request $request)
+    public function getExercises()
     {
         $exercises = Exercise::all();
         return response()->json($exercises);
+    }
+
+    public function muscleGroups() {
+        $muscleGroups = Exercise::select("muscleGroup")
+            ->distinct()
+            ->whereNotNull('muscleGroup')
+            ->orderBy('muscleGroup')
+            ->pluck('muscleGroup');
+        return response()->json($muscleGroups);
     }
 }
