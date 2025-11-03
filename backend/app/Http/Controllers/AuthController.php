@@ -96,6 +96,19 @@ class AuthController extends Controller
             'strict'
         );
 
+        $response->cookie(
+            'userId',
+            $user->id,
+            config('jwt.ttl'),
+            '/',
+            null,
+            true,
+            false,
+            false,
+            'strict'
+        );
+
+
         return $response;
     }
 
@@ -107,7 +120,7 @@ class AuthController extends Controller
             ])->cookie(
                 'jwt_token',
                 null,
-                -1, 
+                -1,
                 '/',
                 null,
                 true,
