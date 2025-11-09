@@ -10,9 +10,16 @@ use App\Http\Controllers\ExerciseController;
 
 // Authentication Routes
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
-Route::get('/user', [AuthController::class, 'getUser'])->middleware('auth:api');
-Route::post('/register', [AuthController::class, 'register'])->middleware('auth:api');
+Route::post('/register', [AuthController::class, 'register']);
+Route::middleware('auth:api')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/user', [AuthController::class, 'getUser']);
+});
+
+Route::middleware(['auth:api', 'role.check'])->get('/role-check', function (Request $request) {
+    return response()->json(["success" => "Accessed admin/editor panel."]);
+});
+
 // Get User Meals
 Route::get('/users/{id}/meals', [MealController::class, 'getMealByUser']);
 
