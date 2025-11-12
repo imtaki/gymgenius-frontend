@@ -11,6 +11,7 @@ class Meal extends Model
     protected $fillable = [
         'name',
         'user_id',
+        'category',
         'calories',
         'protein',
         'carbs',
@@ -18,7 +19,6 @@ class Meal extends Model
     ];
 
     protected $casts = [
-        'name' => 'string',
         'calories' => 'integer',
         'protein'=> 'integer',
         'carbs' => 'float',
