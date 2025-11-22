@@ -39,7 +39,7 @@ export default function Features() {
             {features.map((feature, index) => (
               <Card key={index} className="text-center p-6 hover:shadow-lg transition-all duration-300 hover:scale-105 border-0 bg-card/50 backdrop-blur">
                 <CardContent className="p-0">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full  mb-4">
                     {feature.icon}
                   </div>
                   <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>

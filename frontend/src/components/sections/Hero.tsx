@@ -29,7 +29,7 @@ export default function Hero() {
             <div className="flex items-center justify-center mt-8 space-x-2 text-sm text-muted-foreground">
               <div className="flex items-center">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                  <Star key={i} className="h-4 w-4 fill-secondary" />
                 ))}
               </div>
               <span>4.9/5 from 10,000+ users</span>

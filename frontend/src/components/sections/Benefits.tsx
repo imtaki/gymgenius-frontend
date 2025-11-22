@@ -42,7 +42,7 @@ export default function Benefits() {
           <div>
             <Badge variant="outline" className="mb-4"><CircleQuestionMark />Why Choose GymGenius</Badge>
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Achieve Your Goals <span className="text-primary">10x Faster</span>
+              Achieve Your Goals <span>10x Faster</span>
             </h2>
             <p className="text-lg text-muted-foreground mb-8">
               Our AI-powered platform adapts to your unique fitness profile, providing personalized recommendations that evolve with your progress.
@@ -51,7 +51,7 @@ export default function Benefits() {
               {benefits.map((benefit, index) => (
                 <div key={index} className="flex items-start space-x-4 group">
                   <div className="shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-200">
-                    <benefit.icon className="w-5 h-5 text-primary" />
+                    <benefit.icon className="w-5 h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-foreground mb-1">{benefit.text}</h3>
@@ -66,8 +66,8 @@ export default function Benefits() {
             <div className="aspect-square rounded-2xl border bg-linear-to-br from-primary/5 to-primary/10 p-8 flex items-center justify-center hover:shadow-lg transition-shadow duration-300">
               <div className="text-center">
                 <div className="relative mb-6">
-                  <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl"></div>
-                  <TrendingUp className="h-24 w-24 text-primary mx-auto relative z-10" />
+                  <div className="absolute inset-0 bg-secondary/20 rounded-full blur-xl"></div>
+                  <TrendingUp className="h-24 w-24 mx-auto relative z-10" />
                 </div>
                 <h3 className="text-2xl font-bold mb-3">Track Everything</h3>
                 <p className="text-muted-foreground leading-relaxed">
@@ -76,8 +76,8 @@ export default function Benefits() {
               </div>
             </div>
             
-            <div className="absolute -top-4 -right-4 w-8 h-8 bg-primary/20 rounded-full blur-sm"></div>
-            <div className="absolute -bottom-6 -left-6 w-12 h-12 bg-primary/10 rounded-full blur-md"></div>
+            <div className="absolute -top-4 -right-4 w-8 h-8 bg-secondary/20 rounded-full blur-sm"></div>
+            <div className="absolute -bottom-6 -left-6 w-12 h-12 bg-secondary/10 rounded-full blur-md"></div>
           </div>
         </div>
       </div>

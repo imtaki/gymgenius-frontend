@@ -35,7 +35,6 @@ class MealController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'user_id' => 'required|exists:users,id',
             'category' => 'required|in:breakfast,lunch,dinner,snacks',
             'calories' => 'required|integer',
             'protein' => 'required|integer',
