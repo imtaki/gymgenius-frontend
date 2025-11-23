@@ -6,7 +6,7 @@ import Link from "next/link";
 import { z } from "zod";
 import { Input } from "../../../components/ui/input";
 import { useRouter } from "next/navigation";
-import api from "../../utils/axios";
+import api from "../../api/axios";
 
 const signUpSchema = z
   .object({

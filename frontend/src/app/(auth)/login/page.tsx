@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Dumbbell, Eye, EyeOff, Mail, Lock } from "lucide-react";
 import Link from "next/link";
-import api from "../../utils/axios";
+import { login, login as loginService } from "../../api/authService";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -26,9 +26,8 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const { data } = await api.post("/api/login", { email, password }, { withCredentials: true });
-      
-      if (data?.user) {
+      const data  = await loginService(email, password);
+      if (data) {
         router.push("/dashboard");
       } else {
         setError("Login failed - no token received");

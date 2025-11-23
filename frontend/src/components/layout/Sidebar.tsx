@@ -13,8 +13,7 @@ import {
   Dumbbell,
   CodeXml,
 } from "lucide-react";
-import api from "../../app/utils/axios";
-import getCookie from "../../lib/getCookie";
+import api from "../../app/api/axios";
 
 interface SidebarLinkProps {
   href: string;
@@ -53,14 +52,6 @@ export default function SidebarClient() {
     { label: "Profile", href: "/profile", icon: User },
     { label: "Settings", href: "/settings", icon: Settings },
   ];
-
-  useEffect(() => {
-    const token = getCookie("jwt_token");
-    const userRole = getCookie("role");
-    
-    setIsLoggedIn(!!token);
-    setRole(userRole || null);
-  }, []);
 
   async function handleLogout() {
     try {
