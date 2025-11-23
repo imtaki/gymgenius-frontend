@@ -8,30 +8,40 @@ use App\Http\Controllers\ExerciseController;
 
 
 
-// Authentication Routes
+// Public Authentication Routes
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
-Route::middleware('auth:api')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/user', [AuthController::class, 'getUser']);
-});
-
-Route::middleware(['auth:api', 'role.check'])->get('/role-check', function (Request $request) {
-    return response()->json(["success" => "Accessed admin/editor panel."]);
-});
-
-// Get User Meals
-Route::get('/users/{id}/meals', [MealController::class, 'getMealByUser']);
-
-// Email
 Route::post('/verify-email', [AuthController::class, 'verifyEmail']);
 
-//Exercise
-Route::get('/exercises', [ExerciseController::class, 'getExercises']);
-Route::post('/exercise', [ExerciseController::class, 'createExercises']);
-Route::get('/exercises/muscle-groups', [ExerciseController::class, 'getMuscleGroups']);
-// Meal
-Route::get('/meals/{id}', [MealController::class, 'getMealById']);
-Route::post('/users/{userId}/meals', [MealController::class, 'createMeal']);
-Route::delete('/meals{id}', [MealController::class, 'deleteMeal']);
+Route::apiResource('meals', MealController::class)->middleware('auth:api');
 
+// Protected Routes (Require Authentication)
+Route::middleware(['auth:api'])->group(function () {
+    
+    // Auth Routes
+    Route::prefix('auth')->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::get('/user', [AuthController::class, 'getUser']);
+    });
+    
+    // Role Check Route
+    Route::middleware('role.check')->get('/role-check', function (Request $request) {
+        return response()->json(['success' => 'Accessed admin/editor panel.']);
+    });
+    
+    // Meal Routes
+    Route::prefix('meals')->group(function () {
+        Route::get('/user/{id}', [MealController::class, 'index']);
+        Route::get('/{id}', [MealController::class, 'show']);
+        Route::post('/user/{userId}', [MealController::class, 'store']);
+        Route::put('/{id}', [MealController::class, 'update']);
+        Route::delete('/{id}', [MealController::class, 'destroy']);
+    });
+    
+    // Exercise Routes
+    Route::prefix('exercises')->group(function () {
+        Route::get('/', [ExerciseController::class, 'getExercises']);
+        Route::post('/', [ExerciseController::class, 'createExercises']);
+        Route::get('/muscle-groups', [ExerciseController::class, 'getMuscleGroups']);
+    });
+});
