@@ -48,7 +48,7 @@ class MealService {
         }
     }
 
-    public function deleteMeal($mealId): bool
+    public function deleteMeal($mealId)
     {
         try {
             $meal = Meal::findOrFail($mealId);
