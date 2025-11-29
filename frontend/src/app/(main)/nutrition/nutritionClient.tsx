@@ -8,6 +8,8 @@ import AddMealModal from "../../../components/sections/AddMealModal";
 import { getUser } from "../../api/authService";
 import { deleteMealById, getMealsByUserId } from "../../api/mealService";
 import axiosInstance from "../../api/axios";
+import { getUserSettingsById } from "../../api/userSettingsService";
+import { set } from "zod";
 
 
 const CalorieCounter = ({ 
@@ -124,6 +126,7 @@ export default function NutritionClient() {
     const [meals, setMeals] = useState<Meal[]>([]);
     const [loading, setLoading] = useState(true);
     const [userId, setUserId] = useState<string>("");
+    const [caloricGoal, setGoalType] = useState<number>();
 
     useEffect(() => {
         const user = getUser();
@@ -146,8 +149,25 @@ export default function NutritionClient() {
                 setLoading(false);
             }
         }
+
+        async function fetchCalorieGoal() {
+            try {
+                setLoading(true);
+                const response = await getUserSettingsById(id);
+                setGoalType(parseInt(response.caloric_goal));
+            } catch (error) {
+                console.error("Failed to fetch user settings:", error);
+            } finally {
+                setLoading(false);
+            }       
+         }
+
+            
+                
+
         
         fetchMeals();
+        fetchCalorieGoal();
     }, []); 
 
     const handleDeleteMeal = async (id: string) => {
@@ -187,7 +207,7 @@ export default function NutritionClient() {
 
             <CalorieCounter 
                 current={totals.calories} 
-                goal={2000} 
+                goal={caloricGoal} 
                 macros={{
                     protein: totals.protein,
                     carbs: totals.carbs,
