@@ -17,7 +17,7 @@ export default function ProfilePage() {
         height: '',
         caloricGoal: '',
         goalWeight: '',
-        currentGoal: 'maintaining'
+        currentGoal: ''
     });
     const [passwordData, setPasswordData] = useState({
         currentPassword: '',

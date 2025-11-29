@@ -49,7 +49,7 @@ export default function SidebarClient() {
 
   const navItems = [
     { label: "Dashboard", href: "/dashboard", icon: House },
-    { label: "Profile", href: "/profile", icon: User },
+    { label: "Settings", href: "/settings", icon: User },
   ];
 
   async function handleLogout() {
