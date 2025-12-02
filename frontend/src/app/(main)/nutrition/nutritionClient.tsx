@@ -1,15 +1,13 @@
 "use client";
 
-import { Coffee, UtensilsCrossed, Apple, SquareX, Flame, Droplet, Wheat, Beef, Axis3D } from "lucide-react";
+import { Coffee, UtensilsCrossed, Apple, SquareX, Flame, Droplet, Wheat, Beef } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import Meal from "../../../types/types";
+import { Meal } from "../../../types/types";
 import AddMealModal from "../../../components/sections/AddMealModal";
 import { getUser } from "../../api/authService";
 import { deleteMealById, getMealsByUserId } from "../../api/mealService";
-import axiosInstance from "../../api/axios";
 import { getUserSettingsById } from "../../api/userSettingsService";
-import { set } from "zod";
 
 
 const CalorieCounter = ({ 
