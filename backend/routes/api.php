@@ -41,7 +41,6 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::prefix('settings')->group(function () {
         Route::get('/user/{userId}', [UserSettingsController::class, 'index']);
-        Route::post('/user/{userId}', [UserSettingsController::class, 'store']);
         Route::put('/user/{userId}', [UserSettingsController::class, 'update']);
     });
     

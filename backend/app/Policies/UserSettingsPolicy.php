@@ -9,22 +9,25 @@ class UserSettingsPolicy
     /**
      * Create a new policy instance.
      */
-   public function viewAny(User $user, int $userId)
+   public function viewAny(User $user, User $targetUser)
     {
-        return $user->id === $userId;
+        return $user->id === $targetUser->id;
     }
 
     /**
-     * Determine if the user can update their settings
+     * Determine if the user can update settings
      */
-    public function update(User $user, int $userId)
+    public function update(User $user, User $targetUser)
     {
-        return $user->id === $userId;
+        return $user->id === $targetUser->id;
     }
 
-    public function create(User $user, int $userId)
+    /**
+     * Determine if the user can create settings
+     */
+    public function create(User $user, User $targetUser)
     {
-        return $user->id === $userId;
+        return $user->id === $targetUser->id;
     }
 
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\UserSettingsRequest;
 use App\Models\UserSettings;
+use App\Models\User;
 use App\Services\UserSettingsService;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
@@ -24,14 +25,11 @@ class UserSettingsController extends Controller
         return response()->json(UserSettings::where('user_id', $userId)->first(), 200);
     }
 
-    public function store(UserSettingsRequest $request) {
-        Gate::authorize('create', UserSettings::class);
-        $settings = $this->userSettingsService->createSettings($request);
-        return response()->json(['message' => $settings['message'], 'data' => $settings]);
-    }
+    public function update(UserSettingsRequest $request, $userId) {
+        $user = User::findOrFail($userId);
+        
+        // Gate::authorize('update', $user);
 
-    public function update(UserSettingsRequest $request, User $user) {
-        Gate::authorize('update', $user);
         $settings = $this->userSettingsService->updateSettings($request, $user);
         if (!$settings["success"]) {
             return response()->json(['error' => $settings["message"]], 401);
