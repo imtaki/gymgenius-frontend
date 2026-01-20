@@ -16,8 +16,14 @@ class Exercise extends Model
     protected $fillable = [
         'name',
         'muscleGroup',
-        'description'
+        'description',
+        'user_id',
     ];
 
     protected $table = 'exercises';
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
