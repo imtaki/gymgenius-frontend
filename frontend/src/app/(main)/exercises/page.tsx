@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getExercises } from "../../api/exerciseService";
-import { Plus } from "lucide-react";
+import AddExerciseModal from "../../../components/sections/AddExerciseModal";
 
 export default function ExercisesPage() {
   const [exercises, setExercises] = useState([]);
@@ -39,11 +39,8 @@ export default function ExercisesPage() {
           <h1 className="text-2xl font-bold ">
             Exercises
           </h1>
-          <button 
-                className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-            >
-                <Plus className="w-4 h-4" /> Add Custom Exercise
-            </button>
+
+          <AddExerciseModal />
         </div>
 
        
