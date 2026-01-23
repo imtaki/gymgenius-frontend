@@ -7,6 +7,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\WelcomeMail;
+use Illuminate\Support\Facades\Cache;
 
 class AuthController extends Controller
 {
@@ -23,7 +24,9 @@ class AuthController extends Controller
             ]);
 
             $code = random_int(10000, 99999);
-            $user->verification_code = (string)$code;
+            
+            Cache::put('verification_code_' . $user->email, $code, now()->addMinutes(10));
+            
             $user->is_verified = false;
             $user->save();
 
@@ -66,6 +69,12 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         try {
+            $user = auth()->user();
+
+            if($user) {
+                Cache::forget('user_profile_' . $user->id);
+            }
+
             JWTAuth::invalidate(JWTAuth::getToken());
             return response()->json(['message' => 'Successfully logged out']);
         } catch (JWTException $e) {
@@ -76,8 +85,15 @@ class AuthController extends Controller
     public function getUser(Request $request)
     {
         try {
-            $user = JWTAuth::parseToken()->authenticate();
-            return response()->json($user);
+            $payload = JWTAuth::parseToken()->getPayload();
+            $userId = $payload->get('sub');
+
+            $user = Cache::remember('user_profile_' . $userId, 3600, function () {
+                return JWTAuth::parseToken()->authenticate();
+            });
+
+            return response()->json(['user' => $user]);
+
         } catch (\Exception $e) {
             return response()->json(['error' => 'Token is invalid or expired'], 401);
         }
@@ -92,24 +108,25 @@ class AuthController extends Controller
             return response()->json(['error' => 'Email and code are required.'], 422);
         }
 
-        $user = User::where('email', $email)->first();
+        $cachedCode = Cache::get('verification_code_' . $email);
 
-        if (! $user) {
-            return response()->json(['error' => 'User not found.'], 404);
+        if (!$cachedCode) {
+            return response()->json(['error' => 'Verification code expired or not found.'], 404);
         }
 
-        if ($user->is_verified) {
-            return response()->json(['message' => 'Email already verified.'], 200);
+        if ((string)$cachedCode === (string)$code) {
+            $user = User::where('email', $email)->first();
+            
+            if ($user) {
+                $user->is_verified = true;
+                $user->save();
+                
+                Cache::forget('verification_code_' . $email);
+
+                return response()->json(['message' => 'Email verified successfully.'], 200);
+            }
         }
 
-        if ($user->verification_code === (string)$code) {
-            $user->is_verified = true;
-            $user->verification_code = null;
-            $user->save();
-
-            return response()->json(['message' => 'Email verified successfully.'], 200);
-        } else {
-            return response()->json(['error' => 'Invalid verification code.'], 400);
-        }
+        return response()->json(['error' => 'Invalid verification code.'], 400);
     }
 }
