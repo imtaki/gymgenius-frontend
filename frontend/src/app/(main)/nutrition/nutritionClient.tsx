@@ -201,8 +201,6 @@ export default function NutritionClient() {
 
     return (
         <>
-            <AddMealModal userId={userId} />
-
             <CalorieCounter 
                 current={totals.calories} 
                 goal={caloricGoal} 
@@ -212,6 +210,8 @@ export default function NutritionClient() {
                     fats: totals.fats
                 }}
             />
+
+             <AddMealModal userId={userId} />
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
                 {/* Breakfast */}
