@@ -4,6 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Models\Meal;
+use App\Models\UserSettings;
+use App\Observers\MealObserver;
+use App\Observers\UserSettingsObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,6 +23,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Meal::observe(\App\Observers\MealObserver::class);
+        Meal::observe(MealObserver::class);
+        UserSettings::observe(UserSettingsObserver::class);
+
     }
 }
