@@ -12,16 +12,24 @@ export const login = async (email: string, password: string) => {
         const response = await axiosInstance.post("/login", { email, password });
         const { id, token } = response.data;
         localStorage.setItem("user", JSON.stringify({ id, token }));
-        document.cookie = `userId=${id}; path=/; secure; samesite=strict;`;
         return { id, token };
 
 
     } catch (error) {
         throw error;
     }
-    return null;
 };
 
 export const logout = async () => {
     localStorage.removeItem("user");
+}
+
+
+export async function verifyEmailCode(email: string, code: string) {
+    try {
+        const response = await axiosInstance.post("/verify-email", { email, code });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
 }
