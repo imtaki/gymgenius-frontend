@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\Cache;
+use App\Jobs\SendRateLimitedEmail;
 
 class AuthController extends Controller
 {
@@ -32,7 +33,7 @@ class AuthController extends Controller
 
             $token = JWTAuth::fromUser($user);
 
-            Mail::to($user->email)->send(new WelcomeMail($user, $code));
+            SendRateLimitedEmail::dispatch($user, $code);
 
         } catch (JWTException $e) {
             return response()->json(['error' => 'could_not_create_token'], 500);
