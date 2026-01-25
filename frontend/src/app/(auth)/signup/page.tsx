@@ -7,75 +7,10 @@ import { z } from "zod";
 import { Input } from "../../../components/ui/input";
 import { useRouter } from "next/navigation";
 import api from "../../api/axios";
-
-const signUpSchema = z
-  .object({
-    userName: z
-      .string()
-      .min(2, "Username must be at least 2 characters")
-      .max(50, "Username must be less than 50 characters"),
-    email: z
-      .string()
-      .min(1, "Email is required")
-      .email("Please enter a valid email address"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z.string().min(1, "Please confirm your password"),
-    termsAccepted: z
-      .boolean()
-      .refine((val) => val === true, "You must accept the terms and conditions"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
+import EmailVerificationModal from "../../../components/sections/EmailVerificationModal";
+import { signUpSchema } from "../../../lib/authSchemas";
 
 type SignUpFormData = z.infer<typeof signUpSchema>;
-
-function VerificationCodeInputs({
-  value,
-  onChange,
-  disabled,
-}: {
-  value: string;
-  onChange: (val: string) => void;
-  disabled?: boolean;
-}) {
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>, idx: number) => {
-    const val = e.target.value.replace(/[^0-9]/g, "");
-    const newValue = value.split("");
-    newValue[idx] = val;
-    // If user types, move to next input
-    if (val && idx < 4) {
-      const next = document.getElementById(`code-input-${idx + 1}`);
-      next?.focus();
-    }
-    onChange(newValue.join(""));
-  };
-
-  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    const paste = e.clipboardData.getData("text").replace(/[^0-9]/g, "").slice(0, 5);
-    onChange(paste.padEnd(5, ""));
-  };
-
-  return (
-    <div className="flex justify-center space-x-2 mb-4">
-      {[0, 1, 2, 3, 4].map((idx) => (
-        <Input
-          key={idx}
-          id={`code-input-${idx}`}
-          type="text"
-          inputMode="numeric"
-          maxLength={1}
-          value={value[idx] || ""}
-          onChange={(e) => handleInput(e, idx)}
-          onPaste={handlePaste}
-          disabled={disabled}
-          className="text-center text-xl tracking-widest w-12 h-12 bg-slate-700 border border-slate-600 text-white rounded-lg"
-        />
-      ))}
-    </div>
-  );
-}
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -94,12 +29,7 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string>("");
 
-  // modal + verification states
   const [showVerificationModal, setShowVerificationModal] = useState(false);
-  const [verificationCode, setVerificationCode] = useState("");
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [verificationError, setVerificationError] = useState("");
-  const [verificationSuccess, setVerificationSuccess] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -126,7 +56,7 @@ export default function SignUpPage() {
     try {
       const validatedData = signUpSchema.parse(formData);
 
-      const response = await api.post("/api/register", {
+      const response = await api.post("/register", {
         name: validatedData.userName,
         email: validatedData.email,
         password: validatedData.password,
@@ -159,32 +89,6 @@ export default function SignUpPage() {
     }
   };
 
-  const handleVerifyCode = async () => {
-    setIsVerifying(true);
-    setVerificationError("");
-    setVerificationSuccess(false);
-    try {
-      const response = await api.post("/api/verify-email", {
-        email: formData.email,
-        code: verificationCode,
-      });
-      if (response.status === 200) {
-        setVerificationSuccess(true);
-        setTimeout(() => {
-          setShowVerificationModal(false);
-          router.push("/login?verified=true");
-        }, 1500);
-      }
-    } catch (error: any) {
-      if (error.response) {
-        setVerificationError(error.response.data?.message || "Invalid code.");
-      } else {
-        setVerificationError("Network error. Please try again.");
-      }
-    } finally {
-      setIsVerifying(false);
-    }
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative">
@@ -409,48 +313,12 @@ export default function SignUpPage() {
 
       {/* Email Verification Modal */}
       {showVerificationModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-md p-6 text-center relative">
-            <button
-              onClick={() => setShowVerificationModal(false)}
-              className="absolute top-3 right-3 text-slate-400 hover:text-white"
-            >
-              <X className="h-5 w-5" />
-            </button>
-
-            <h2 className="text-2xl font-semibold text-white mb-2">
-              Verify Your Email
-            </h2>
-            <p className="text-slate-300 mb-6">
-              A 5-digit code was sent to{" "}
-              <span className="text-blue-400">{formData.email}</span>.
-            </p>
-
-            <VerificationCodeInputs
-              value={verificationCode}
-              onChange={setVerificationCode}
-              disabled={isVerifying}
-            />
-
-            {verificationError && (
-              <p className="text-red-400 text-sm mb-3">{verificationError}</p>
-            )}
-            {verificationSuccess && (
-              <p className="text-green-400 text-sm mb-3">
-                Email verified successfully!
-              </p>
-            )}
-
-            <button
-              onClick={handleVerifyCode}
-              disabled={isVerifying || verificationCode.length !== 5}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 text-white font-medium py-2 rounded-lg transition"
-            >
-              {isVerifying ? "Verifying..." : "Verify"}
-            </button>
-            { /*email resend link can be added here */}
-          </div>
-        </div>
+        <EmailVerificationModal 
+        isOpen={showVerificationModal}
+        onClose={() => setShowVerificationModal(false)}
+        email={formData.email}
+        onSuccess={() => router.push("/login?verified=true")}
+      />
       )}
     </div>
   );

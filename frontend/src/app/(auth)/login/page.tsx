@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Dumbbell, Eye, EyeOff, Mail, Lock } from "lucide-react";
 import Link from "next/link";
-import { login, login as loginService } from "../../api/authService";
+import { login as loginService } from "../../api/authService";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
