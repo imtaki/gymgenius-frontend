@@ -6,8 +6,18 @@ export const getUser = () => {
   return user ? JSON.parse(user) : null;
 }
 
+export const registerUser = async (name: string, email: string, password: string) => {
+    try {
+        const response = await axiosInstance.post("/register", { name, email, password });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }       
+};
+ 
 
-export const login = async (email: string, password: string) => {
+
+export const loginUser = async (email: string, password: string) => {
     try {
         const response = await axiosInstance.post("/login", { email, password });
         const { id, token } = response.data;

@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import api from "../../api/axios";
 import EmailVerificationModal from "../../../components/sections/EmailVerificationModal";
 import { signUpSchema } from "../../../lib/authSchemas";
+import { register, registerUser } from "../../api/authService";
 
 type SignUpFormData = z.infer<typeof signUpSchema>;
 
@@ -56,11 +57,11 @@ export default function SignUpPage() {
     try {
       const validatedData = signUpSchema.parse(formData);
 
-      const response = await api.post("/register", {
-        name: validatedData.userName,
-        email: validatedData.email,
-        password: validatedData.password,
-      });
+      const response = await registerUser(
+        validatedData.userName,
+        validatedData.email,
+        validatedData.password
+      );
 
       if (response.status === 201 || response.status === 200) {
         setShowVerificationModal(true);
