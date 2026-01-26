@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Models\Meal;
+use App\Models\UserSettings;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -62,7 +64,29 @@ class User extends Authenticatable implements JWTSubject
         ];
     }
 
+    protected static function booted()
+    {
+        static::created(function ($user) {
+            $user->settings()->create([
+                'user_id' => $user->id,
+                'height' => 175.00,
+                'age' => 18,
+                'goal_type' => "maintaining",
+                'caloric_goal' => 2500,
+                'current_weight' => 70.00,
+                'target_weight' => 70.00,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        });
+    }
+
+
     public function meals() {
         return $this->hasMany(Meal::class);
+    }
+
+    public function settings() {
+        return $this->hasOne(UserSettings::class);
     }
 }
